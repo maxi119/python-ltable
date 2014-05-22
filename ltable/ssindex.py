@@ -23,7 +23,7 @@ class SSIndexM1( SSIndexBase ):
         
     def getIndexRef( self, keys, outRslt, index_level = 0):
         if index_level >= len(keys):
-            getAllItem( outRslt )
+            self.getAllItem( outRslt )
             return
 
         #row_value = set()
@@ -35,7 +35,7 @@ class SSIndexM1( SSIndexBase ):
             outRslt.append( v )
         
     def unregisterRow( self, rowIdx, row ):
-        v = rox[rowIdx]
+        v = row[self._col]
         self._keyMap[v].remove( rowIdx )
         
         if len( self._keyMap[v] ) == 0:
@@ -46,7 +46,7 @@ class SSIndexM1( SSIndexBase ):
     def getAllItem( self, outRslt ):
         for k, v in self._keyMap.items():
             for y in v:
-                outRslt.insert( y )
+                outRslt.append( y )
 
     def getColumnIndex( self, vIndex ):
         super( SSIndexM1, self).getColumnIndex( vIndex )
@@ -74,6 +74,7 @@ class SSIndex( SSIndexBase ):
                 refIndex = SSIndexM1( self._colIndex, self._src, self._next_index )
             else:
                 refIndex = SSIndex( self._colIndex, self._src, self._next_index )
+        self._ref_Value[ row[ self._col ] ] = refIndex
         refIndex.registerRow( idxRow, row )
 
     def getIndexRef( self, keys, outRslt, index_level =0 ):
@@ -91,7 +92,7 @@ class SSIndex( SSIndexBase ):
         for k, y in self._ref_Value.items():
         
             if y.unregisterRow( idxRow, row ):    
-                self._ref_Value.remove( k )
+                del self._ref_Value[ k ]
 
         if len(self._ref_Value) == 0:
             return True

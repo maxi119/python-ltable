@@ -18,6 +18,12 @@ class SSResultSet():
     def __len__(self):
         return len(self._res)
 
+    def getRowDict(self, irow ):
+        if irow >= len( self._res ):
+            return None
+        return self._src.row_dict( self._res[ irow ] )
+        
+
     class _Iter():
         def __init__(self, rs ):
             self._rs = rs
@@ -27,3 +33,4 @@ class SSResultSet():
                 raise StopIteration
             self._idx +=1            
             return self._rs[ self._idx-1 ]
+

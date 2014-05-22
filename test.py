@@ -1,4 +1,4 @@
-from ltable import *
+from ltable.sstable import *
 
 
 def GenRow( row, tag ):
