@@ -76,58 +76,12 @@ class SSTable():
             return rs.getRowDict(0)
         return rs[0]
 
-    def findRow( self, idxName, keyValue, filterlist = None, sortList = None, 
-                                          limit = None, group = None ):
+    def findRow( self, idxName, keyValue, filterlist = None ):
         import types
         inRs = []
         self._findRow( idxName, keyValue, inRs )
         # filter
-        # sort
-        if sortList:
-
-            class _sort():
-                def __init__(self, sortList, src ):
-                    self._sortlist = sortList
-                    self._src = src
-                def _make( self, lhs, rhs ):
-                    rowL = self._src._storage.get( lhs )
-                    rowR = self._src._storage.get( rhs )
-                    
-                    pairs = self._sortlist.items()
-                    last = len(pairs)-1
-                    for i in xrange( pairs ):
-                        k, v = pair[i]
-                        col = self._scr._col_name.get( x )
-                        colL = rowL[col]
-                        colR = rowR[col]
-                        if i == last:
-                            return v( colL, colR )
-                        if v( colL, colR ) < 0:
-                            return -1;
-                        return 1                        
-                    return -1
-
-            newList = sorted( inRs, _sort( sortList, self )._make )
-            inRs = newList  # replace.
-
-        # group
-        if group:
-            group_rs = {}
-            for i in inRs:
-                row = self._storage[i]
-                if type(group) in ( types.ListType, types.TupleType):
-                    g_name = []
-###TY LD
-                    for gcol in group:
-                        g_name.append( row[ gcol ] )
-                    group_rs[ tuple( g_name) ] = dict(row) # make copy
-                else:
-                    g_name = row[ group ] 
-                    group_rs[ g_name ] = dict(row) # make copy
-                    
-
-            return group_rs
-        
+         
         rs = SSResultSet( self, inRs )
         return rs
 
@@ -184,7 +138,7 @@ class SSTable():
         return dict( zip(self._columns, self._storage.get(idx) ) )
 
     def all( self ):
-        return self._storage.values()
+        return SSResultSet( self, self._storage.keys() )
                 
 
     def _getAllIndex( self, idxList ):

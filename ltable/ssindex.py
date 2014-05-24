@@ -36,7 +36,10 @@ class SSIndexM1( SSIndexBase ):
         
     def unregisterRow( self, rowIdx, row ):
         v = row[self._col]
-        self._keyMap[v].remove( rowIdx )
+        try:
+            self._keyMap[v].remove( rowIdx )
+        except KeyError as e:
+            return True
         
         if len( self._keyMap[v] ) == 0:
             del self._keyMap[v] 
