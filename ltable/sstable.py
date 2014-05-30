@@ -89,9 +89,9 @@ class SSTable():
         inRs = []
         self._findRow( idxName, keyValue, inRs )
         for i in inRs:
-#            if not condition and not( condition() ):
-#                continue
             row = self._storage.get( i )
+            if (condition!=None) and not( condition( row ) ):
+                continue
             for k, v in self._indexs.items():
                 v.unregisterRow(i, row )
             del self._storage[i]
