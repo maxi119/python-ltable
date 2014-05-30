@@ -43,6 +43,7 @@ def testListStorage():
         theTable.findRow( 0, "2-1" );
         resultRow=[]
         theTable.findRow( 0, "3-1");
+    _TestSimpleTable()
 
 def testDictStorage():
     def GenRow( row, tag ):
@@ -115,4 +116,4 @@ def testDictStorage():
  
 if __name__ == '__main__':
     testDictStorage()
-    testListStorage()
+    #testListStorage()
