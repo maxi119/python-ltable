@@ -27,15 +27,41 @@ class SSResultSet():
     def to_list( self ):
         rs = []
         for r in self:
-        # PT DL
-            row =[]
-            for k, v in r.items():
-                row.append( v )
-            rs.append( tuple(row) )
+            rs.append( tuple(r.values()) )
+
+            #if type(r) == types.DictType:
+            #    rs.append( tuple(r.values()) )
+            #elif type(r) == types.ListType:
+            #    rs.append( tuple( r ) )
         return rs        
 
+    def filter( self, condition ):
+        tempRs = []
+        for irow in self._res:
+            row = self._src.row( irow )
+            if condition( row ):
+                tempRs.append( irow )
+        return SSResultSet( self._src, tempRs )
+
+    def top( self, cnt ):
+        newlist = self._res[0: cnt]
+        return SSResultSet( self._src, newlist )
+
+    def tail( self, cnt ):
+        newlist = self._res[ len(self._res) -cnt : ]
+        return SSResultSet( self._src, newlist )
+
+    def any( self ):
+        import random
+        if len( self._res ) == 0:
+            return SSResultSet( self._src, [] )
+        return SSResultSet( self._src, [ random.choice( self._res) ] )
+
+    def _append_row_index( self, idx ):
+        self._res.append( idx )
+
     def group( self, group_columns = () ):
-        group_rs = SSResultGroup( group_columns )
+        group_rs = SSResultGroup( group_columns, self._src )
         for i in self._res:
             row = self._src.row(i)
             if type(group_columns) in ( types.ListType, types.TupleType):
@@ -43,14 +69,16 @@ class SSResultSet():
 ###TY LD
                 for gcol in group_columns:
                     g_name.append( row[ gcol ] )
-                if not group_rs.get( g_name ):
-                    group_rs[ g_name ] = []
-                group_rs[ tuple( g_name) ].append( dict(row) ) # make copy
+                t_gname = tuple( g_name )
+
+                if not group_rs.get( t_gname ):
+                    group_rs[ t_gname ] = SSResultSet( self._src, [] )
+                group_rs[ t_gname ]._append_row_index( i ) 
             else:
                 g_name = row.get( group_columns )
                 if not group_rs.get( g_name ):
-                    group_rs[ g_name ] = []
-                group_rs[ g_name ].append( dict(row) ) # make copy
+                    group_rs[ g_name ] = SSResultSet( self._src, [] )
+                group_rs[ g_name ]._append_row_index( i )  # make copy
                 
 
         return group_rs
@@ -93,8 +121,13 @@ class SSResultSet():
 
 
 class SSResultGroup(dict):
-    def __init__(self, group ):
+    ''' { group_name: [ row,
+                        row,...    ]
+         }
+    '''   
+    def __init__(self, group, src ):
         self._group = group
+        self._src = src
         super( SSResultGroup, self).__init__()
 
     @property
@@ -107,9 +140,9 @@ class SSResultGroup(dict):
         if icount<=0:
             icount = None   # all 
 
-        rs = []
+        rs = SSResultSet( self._src, [] )
         for k, v in self.items():            
-            rs.extend( v[0:icount] )
+            rs._res.extend( v._res )
         return rs
 
 

@@ -74,43 +74,46 @@ def testDictStorage():
         theTable.addRow( vRow );
 
         print("all")
-        pprint( theTable.all() )
+        pprint( theTable.all().to_list() )
         resultRow=[]
+        theKey = ["1-1"]
         resultRow = theTable.findRow( "idx1", "1-1")
         pprint( resultRow.to_list() )
 
         theKey = ["1-1"]
-        rs = theTable.findRow( pIndex3, theKey );
         print( "find 1-1" )
+        rs = theTable.findRow( pIndex3, theKey );
         pprint( rs.to_list() )
-        rs = theTable.findRow( "idx1", "0-1" );
+
         print( "\nfind 0-1" )
+        rs = theTable.findRow( "idx1", "0-1" );
         pprint( rs.to_list() )
 
-        rs = theTable.findRow( "idx1", "2-1" );
         print( "\nfind 2-1" )
+        rs = theTable.findRow( "idx1", "2-1" );
         pprint( rs.to_list() )
 
-        rs = theTable.findRow( "idx1", "3-1");
         print( "\nfind 3-1" )
+        rs = theTable.findRow( "idx1", "3-1");
         pprint( rs.to_list() )
 
         rs = theTable.all()
-        rs1 = rs.sort( [("col1",cmp), ("col2,cmp") ] )        
         print( "\nsorted" )
-        pprint( rs1.to_list() )
-        rs1 = rs.sort( [("col1",cmp)], reverse = True )        
-        print( "\nsorted 2" )
+        rs1 = rs.sort( [("col1",cmp), ("col2,cmp") ] )        
         pprint( rs1.to_list() )
 
+        print( "\nsorted 2" )
+        rs1 = rs.sort( [("col1",cmp)], reverse = True )        
+        pprint( rs1.to_list() )
+
+        print( "\nremove 2-1" )
         theTable.removeRow( "idx1", ("2-1") )
         rs = theTable.findRow( "idx1", "2-1" );
-        print( "\nremove 2-1" )
         pprint( rs.to_list() )
 
-        rs = theTable.findRow( "idx1", ("1-1") ).group("col1").head(0)
         print("\n Group")
-        pprint( rs )
+        rs = theTable.findRow( "idx1", ("1-1") ).group("col1").head(0)
+        pprint( rs.to_list() )
 
     _TestSimpleTable()
  

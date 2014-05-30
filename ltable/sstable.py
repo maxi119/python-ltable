@@ -6,6 +6,7 @@ class SSTable():
         self._storage = {}  # data store here
         self._indexs = {}   # index by columns
         self._columns = []  # column name 
+        self._col_index = {}    # if row is only list, map name to column index
         self._next_ID = 0
 
     def __len__(self):
@@ -62,27 +63,32 @@ class SSTable():
         inRs = []
         self._findRow( idxName, keyValue, inRs )
                 
-        if condition:
-            tempRs = list(inRs)
-            del inRs[:]
-            for irow in tempRs:
-                row = self._storage.get( irow )
-                for k, f in condition.items():
-                    if f(row[k]):
-                        inRs.append( irow )
-
         rs = SSResultSet( self, inRs )
+        if  condition != None:
+            rs = rs.filter( condition )
+        if len( rs ) == 0:
+            return rs
+
         if format  == 'dict':
             return rs.getRowDict(0)
         return rs[0]
 
-    def findRow( self, idxName, keyValue, filterlist = None ):
-        import types
+    def findRow( self, idxName, keyValue ):
         inRs = []
         self._findRow( idxName, keyValue, inRs )
-        # filter
          
         rs = SSResultSet( self, inRs )
+        return rs
+
+    def findInSet( self, idxName, keyValueList ):        
+        keepOne = set()
+        for ks in keyValueList:
+            inRs = []
+            self._findRow( idxName, keyValue, inRs )
+            for i in inRs:
+                keepOne.add(i)
+         
+        rs = SSResultSet( self, list[keepOne] )
         return rs
 
     def removeRow( self, idxName, keyValue, condition = None):
