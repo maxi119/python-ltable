@@ -36,6 +36,7 @@ class SSIndexM1( SSIndexBase ):
         
     def unregisterRow( self, rowIdx, row ):
         v = row[self._col]
+        
         try:
             self._keyMap[v].remove( rowIdx )
         except KeyError as e:
@@ -92,10 +93,14 @@ class SSIndex( SSIndexBase ):
     def unregisterRow( self, idxRow, row ):
         ''' return true if empty
         '''
-        for k, y in self._ref_Value.items():
-        
-            if y.unregisterRow( idxRow, row ):    
-                del self._ref_Value[ k ]
+#        for k, y in self._ref_Value.items():                
+        v = row[self._col]
+        y = self._ref_Value.get( v )
+        if not y:
+            return True
+
+        if y.unregisterRow( idxRow, row ):    
+            del self._ref_Value[ v ]
 
         if len(self._ref_Value) == 0:
             return True
