@@ -67,7 +67,7 @@ class SSTable():
         if  condition != None:
             rs = rs.filter( condition )
         if len( rs ) == 0:
-            return rs
+            return None
 
         if format  == 'dict':
             return rs.getRowDict(0)
