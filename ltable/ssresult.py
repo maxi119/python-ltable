@@ -35,6 +35,13 @@ class SSResultSet():
             #    rs.append( tuple( r ) )
         return rs        
 
+    def to_dict( self ):
+###TY LD
+        rs = []
+        for r in self:
+            rs.append( dict(r) ) # copy..
+        return rs
+
     def filter( self, condition ):
         tempRs = []
         for irow in self._res:
